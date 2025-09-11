@@ -27,3 +27,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [project.scripts]
+generate-telematics = "telematics_insurance_model.core.generate_telematics:main"

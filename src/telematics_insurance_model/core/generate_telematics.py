@@ -29,7 +29,9 @@ def main():
     all_analyses = []
     all_trip_data = []
     
+    # Ensure that data and figures directory exist
     os.makedirs('data/trip_records', exist_ok=True)
+    os.makedirs('figures', exist_ok=True)
 
     # Number of good and bad drivers to simulate, choose 31 for a months worth of data 
     num_trips = 31
@@ -46,32 +48,32 @@ def main():
     analyses_df.to_csv('data/trip_records/trip_analyses.csv', index=False)
     
     # Print summary analyses
-    print("\n" + "="*70)
-    print("TELEMATICS TRIP ANALYSIS RESULTS")
-    print("="*70)
+    logger.info("\n" + "="*70)
+    logger.info("TELEMATICS TRIP ANALYSIS RESULTS")
+    logger.info("="*70)
     
     for analysis in all_analyses:
         driver_type = "🟢 GOOD" if "GOOD" in analysis['driver_id'] else "🔴 BAD"
-        print(f"\n{driver_type} | Trip: {analysis['trip_id']}")
-        print(f"├─ Driver: {analysis['driver_id']}")
-        print(f"├─ Risk Score: {analysis['risk_score']:.1f}/100")
-        print(f"├─ Trip Distance: {analysis['trip_length_miles']} miles")
-        print(f"├─ Duration: {analysis['trip_duration_minutes']} minutes")
-        print(f"├─ Max Speed: {analysis['max_speed']:.1f} mph")
-        print(f"├─ Speeding Events: {analysis['speeding_events']}")
-        print(f"├─ Hard Braking Events: {analysis['hard_braking_events']}")
-        print(f"└─ Hard Acceleration Events: {analysis['hard_acceleration_events']}")
+        logger.info(f"\n{driver_type} | Trip: {analysis['trip_id']}")
+        logger.info(f"├─ Driver: {analysis['driver_id']}")
+        logger.info(f"├─ Risk Score: {analysis['risk_score']:.1f}/100")
+        logger.info(f"├─ Trip Distance: {analysis['trip_length_miles']} miles")
+        logger.info(f"├─ Duration: {analysis['trip_duration_minutes']} minutes")
+        logger.info(f"├─ Max Speed: {analysis['max_speed']:.1f} mph")
+        logger.info(f"├─ Speeding Events: {analysis['speeding_events']}")
+        logger.info(f"├─ Hard Braking Events: {analysis['hard_braking_events']}")
+        logger.info(f"└─ Hard Acceleration Events: {analysis['hard_acceleration_events']}")
     
     # Summary statistics
     good_scores = [a['risk_score'] for a in all_analyses if 'GOOD' in a['driver_id']]
     bad_scores = [a['risk_score'] for a in all_analyses if 'BAD' in a['driver_id']]
     
-    print(f"\n" + "="*70)
-    print("SUMMARY STATISTICS")
-    print("="*70)
-    print(f"Good Drivers - Average Risk Score: {np.mean(good_scores):.1f}")
-    print(f"Bad Drivers - Average Risk Score: {np.mean(bad_scores):.1f}")
-    print(f"Risk Score Difference: {np.mean(bad_scores) - np.mean(good_scores):.1f} points")
+    logger.info(f"\n" + "="*70)
+    logger.info("SUMMARY STATISTICS")
+    logger.info("="*70)
+    logger.info(f"Good Drivers - Average Risk Score: {np.mean(good_scores):.1f}")
+    logger.info(f"Bad Drivers - Average Risk Score: {np.mean(bad_scores):.1f}")
+    logger.info(f"Risk Score Difference: {np.mean(bad_scores) - np.mean(good_scores):.1f} points")
     
     # Create visualizations
     logger.info("Creating visualizations...")

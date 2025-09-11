@@ -97,7 +97,7 @@ class TripVisualizer:
                            f'{count}', ha='center', va='bottom', fontweight='bold')
         
         plt.tight_layout()
-        plt.savefig(f"{analysis['driver_id']}_{analysis['trip_id']}.png")
+        plt.savefig(f"figures/{analysis['driver_id']}_{analysis['trip_id']}.png")
         plt.show()
 
     
@@ -155,6 +155,6 @@ class TripVisualizer:
         axes[1, 1].grid(True, alpha=0.3)
         
         plt.tight_layout()
-        plt.savefig(f"all_driver_data.png")
+        plt.savefig(f"figures/all_driver_data.png")
         plt.show()
 

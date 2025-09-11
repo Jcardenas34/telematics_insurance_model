@@ -1,23 +1,33 @@
+import os
 import logging
-
-'''
-This module will set a global instance of the Redis client.
-'''
+from datetime import datetime 
 
 # Will be gloabally accessible
 logger: logging.Logger | None = None
 
 def initialize_logger():
     """
-    Establishes the connection to the Redis server and configures 
-    the client instance for application-wide use.
+    Creates a singleton instance of a logger.
+
+    Returns:
+        logging.Logger: Configured logger instance.
+    Raises:
+        Exception: If logger initialization fails.
+
     """
+    # Ensure that the logs directory exists
+    os.makedirs('logs', exist_ok=True)
+
     global logger
     if logger is None:
         print("Creating Log ...")
-        # A connection pool is integral for managing connections efficiently.
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+        
+        # Create a timestamped log file
+        now = str(datetime.now()).replace(" ","_")
+        path = f"logs/telematics_data_{now}.log"
+
+        logging.basicConfig(filename=path, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
         logger = logging.getLogger(__name__)
-        print("Log created")
+        print(f"Log created: {path}")
 
     return logger
