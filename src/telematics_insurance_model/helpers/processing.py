@@ -7,7 +7,10 @@ from telematics_insurance_model.helpers.logger import logger
 
 
 class TripAnalyzer:
-    """Analyzes trip data for risk scoring metrics"""
+    """
+    Analyzes trip data for risk scoring metrics
+    
+    """
     
     def __init__(self):
         self.speeding_threshold = 30.0  # mph
@@ -24,7 +27,7 @@ class TripAnalyzer:
         
         # Calculate trip length (estimated miles based on points and average speed)
         avg_speed = np.mean([s for s in speeds if s > 0])
-        trip_duration_hours = len(trip_data) * 1 / 3600  # 2 seconds per point
+        trip_duration_hours = len(trip_data) * 1 / (3*3600)  # 3 measurements a seconds converted to hours
         estimated_trip_miles = avg_speed * trip_duration_hours
         
         speeding_events = 0
@@ -66,7 +69,7 @@ class TripAnalyzer:
             'trip_id': trip_data[0].trip_id,
             'driver_id': trip_data[0].driver_id,
             'trip_length_miles': round(estimated_trip_miles, 2),
-            'trip_duration_minutes': round(len(trip_data) * 2 / 60, 1),
+            'trip_duration_minutes': round(len(trip_data) * 1 / (3*60), 1),
             'data_points': len(trip_data),
             'max_speed': round(max(speeds), 1),
             'avg_speed': round(np.mean(speeds), 1),
