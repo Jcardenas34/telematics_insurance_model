@@ -17,7 +17,27 @@ from telematics_insurance_model.utils.simulate import TelematicsSimulator, gener
 
 
 def main():
-    """Main function to run the telematics simulation"""
+    """
+    A script that will simulate the telematics data for good and bad drivers,
+    analyze the trips for risk metrics, and create visualizations.
+    The results will be logged and saved to CSV files.
+
+    The simulation models good and bad driver behaviour in non-highway conditions.
+    travelling down streets with a speed limit of 30mph.
+
+    The situation simulated is a driver travelling for 10 minutes, that encounters a slow
+    down about a quarter way through the trip forcing a slowdown. Data points are
+    recorded every 1/3 second (3Hz). Good drivers will generally obey speed limits
+    and avoid hard braking/acceleration events, while bad drivers will exhibit
+    more risky behaviour (hard breaks and accelerations).
+
+    Figures of the trip data and summary statistics are saved to the 'figures' directory.
+    Trip data and analyses are saved to the 'data/trip_records' directory.
+    
+
+    """
+
+
     logger.info("Starting Simple Telematics Data Simulation System")
     
     # Initialize components

@@ -98,7 +98,7 @@ class TripVisualizer:
         
         plt.tight_layout()
         plt.savefig(f"figures/{analysis['driver_id']}_{analysis['trip_id']}.png")
-        plt.show()
+        # plt.show()
 
     
     def plot_driver_comparison(self, analyses: List[Dict]):
@@ -156,5 +156,5 @@ class TripVisualizer:
         
         plt.tight_layout()
         plt.savefig(f"figures/all_driver_data.png")
-        plt.show()
+        # plt.show()
 
