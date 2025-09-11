@@ -1,4 +1,13 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime
+from typing import List, Dict
+import pandas as pd
+import numpy as np
 
+
+from telematics_insurance_model.helpers.logger import logger
+from telematics_insurance_model.utils.simulate import TelematicsDataPoint
 
 class TripVisualizer:
     """Creates visualizations for trip data"""
@@ -148,3 +157,4 @@ class TripVisualizer:
         plt.tight_layout()
         plt.savefig(f"all_driver_data.png")
         plt.show()
+

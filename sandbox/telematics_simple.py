@@ -4,7 +4,6 @@ Simple Telematics Data Simulation System (No Kafka Dependencies)
 Generates realistic driving data with good/bad behaviors
 """
 
-import os
 import json
 import random
 import math
@@ -563,7 +562,7 @@ def generate_trips(num_trips: int, distance:int, simulator, analyzer, all_analys
         all_trip_data.append((trip_data, analysis))
         
         # Export individual trip data
-        export_trip_data(trip_data, f"data/trip_records/{trip_id}_data.csv")
+        export_trip_data(trip_data, f"data/{trip_id}_data.csv")
     
     # Generate multiple bad driver trips
     logger.info("Generating bad driver trips...")
@@ -577,7 +576,7 @@ def generate_trips(num_trips: int, distance:int, simulator, analyzer, all_analys
         all_trip_data.append((trip_data, analysis))
         
         # Export individual trip data
-        export_trip_data(trip_data, f"data/trip_records/{trip_id}_data.csv")
+        export_trip_data(trip_data, f"data/{trip_id}_data.csv")
 
 def main():
     """Main function to run the telematics simulation"""
@@ -592,18 +591,18 @@ def main():
     all_analyses = []
     all_trip_data = []
     
-    os.makedirs('data/trip_records', exist_ok=True)
 
     num_trips = 31
     distance = 600 # Seconds so 10 minutes
     generate_trips(num_trips, distance, simulator, analyzer, all_analyses, all_trip_data)
     
     # Create data directory if it doesn't exist
-    
+    import os
+    os.makedirs('data', exist_ok=True)
     
     # Export all analyses
     analyses_df = pd.DataFrame(all_analyses)
-    analyses_df.to_csv('data/trip_records/trip_analyses.csv', index=False)
+    analyses_df.to_csv('data/trip_analyses.csv', index=False)
     
     # Print summary analyses
     print("\n" + "="*70)
@@ -645,7 +644,7 @@ def main():
     visualizer.plot_driver_comparison(all_analyses)
     
     logger.info("Simulation completed successfully!")
-    logger.info("Data files saved to 'data/trip_records/' directory")
+    logger.info("Data files saved to 'data/' directory")
 
 if __name__ == "__main__":
     main()

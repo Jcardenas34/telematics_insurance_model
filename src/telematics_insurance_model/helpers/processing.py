@@ -1,12 +1,8 @@
 import numpy as np
 
-def moving_average(data, window_size):
-    # Create a boxcar kernel (all ones) and normalize it
-    kernel = np.ones(window_size) / window_size
-    # Convolve the data with the kernel
-    # 'same' mode ensures the output array has the same length as the input
-    smoothed_data = np.convolve(data, kernel, mode='same')
-    return smoothed_data
+from typing import List, Dict
+from telematics_insurance_model.utils.simulate import TelematicsDataPoint
+from telematics_insurance_model.helpers.logger import logger
 
 
 
