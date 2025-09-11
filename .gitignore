@@ -3,6 +3,11 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+
+# Will exclude datasets
+data/trip_records/GOOD*
+data/trip_records/BAD*
+
 # C extensions
 *.so
 

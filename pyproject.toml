@@ -1,0 +1,30 @@
+[build-system]
+requires=["setuptools"]
+
+
+[project]
+name = "telematics_insurance_model"
+version = "1.0.0"
+description = "This repo shows the development of a fully developed fair pricing auto insurance model using artificial intelligence to factor in driving habits into customer insurance pricing. "
+dependencies = [
+    "pytorch",
+    "lightgbm",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "requests",
+    "pipreqs",
+]
+
+authors = [
+  { name = "Juan Cardenas", email = "cardenas.juan5453@gmail.com" }
+]
+requires-python = "<=3.13"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
