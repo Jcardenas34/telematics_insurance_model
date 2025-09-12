@@ -1,100 +1,144 @@
-# telematics_insurance_model
-This repo shows the development of a fully developed fair pricing auto insurance model using artificial intelligence to factor in driving habits into customer insurance pricing. 
+# Integrating Telematics Data Into A Dynamic Pricing Model
+This repo shows the development of a fair pricing auto insurance model using Machine learning to factor in driving habits into customer insurance pricing.
+Materially lowering insurance premiums for good driving habits.
+
+# Setting up the repo
+Setup of this code base is simple
+Create a virtual environment, clone this repo, install the package and run steps.
+
+```
+conda create -n telematics python=3.11
+
+conda activate telematics
+
+git clone git@github.com:Jcardenas34/telematics_insurance_model.git
+
+cd telematics_insurance_model
+
+pip install -e . 
+```
+
+# Quickstart
+Once setup simply run the following lines as is to produce results. Look in figures, logs, data, etc to view work.
+
+```
+create-preprocessed-data
+train-logistic-regressor
+
+generate-telematics
+evaluate-generated-telematics
+```
+
+# Dataset
+The dataset used in this analysis was taken from mendeley data [^label], and contains a span data from three full years (November 2015 to December 2018) concerning non-life motor insurance portfolio. This dataset comprises 105,555 rows and 30 columns. Each row signifies a policy transaction, while each column represents a distinct variable. As it stands, no telematics data was included in the dataset. To simulate good and bad driver behaviour over the course of 365 trips (simulating a year of daily driving) use 'create-preprocessed-data'. 
+
+```
+[^label] Lledó, Josep; Pavía, Jose M. (2024), “Dataset of an actual motor vehicle insurance portfolio”, Mendeley Data, V2, doi: 10.17632/5cxyb5fp4f.2
+```
+https://data.mendeley.com/datasets/5cxyb5fp4f/2
 
 
-# Telematics Integration in Auto Insurance Project Overview
+
+# Generate telematics driver data 
+To append telematics data to the dataset for both good and bad driver behaviour, simply run
+```
+create-preprocessed-data
+```
+from the top directory.
 
 
 
-## Background 
 
-Traditional automobile insurance pricing models are primarily based on generalized demographic and historical risk factors such as age, location, vehicle type, and past claims.
+# Dynamic pricing model
 
-
-
-This model often fails to reflect the actual driving behavior of individuals, resulting in unfair premiums and limited incentives for drivers to adopt safer driving habits.
+In order to asess a driver's risk in a way that will inform thier monthly premium,
+I have chosen a pricing scheme that is a function of a calculated "risk_factor", which is determined via a logistic regression algorithm. The dynamic pricing model is as follows. 
 
 
+$$premium = base\_rate + \alpha*risk\_factor $$
 
-Telematics technology offers a solution by enabling the collection of real-time vehicle and driver behavior data such as speed, braking patterns, mileage, time of travel, and geolocation.
-
-
-
-Integrating telematics into insurance models allows insurers to move toward usage-based insurance (UBI) models like Pay-As-You-Drive (PAYD) and Pay-How-YouDrive (PHYD), offering fairer and more personalized premium calculations.
+Where $risk\_factor$ ranges from 0 to 1, a higher risk factor, determined by customer demographic information as well as driver behaviour (telematics), will be reflected in the monthly premium and updated after each risk asessment (drive). 
 
 
 
-## Objective:
+# Risk Asessment
+A logistic regression algorithm is used to determine weather a claim will be filed within a given month due to traditional risk factors as well as drivor behavour (telematics). By running
 
- Design and develop a telematics-based auto insurance solution that accurately captures driving behavior and vehicle usage data and integrates this data into a dynamic insurance pricing model.
+    train-logistic-regressor
 
+3 models will be trained, one using only traditional demographic factors such as __, one using only telematics features such as number of speeding events, hard breaks, etc. and one using both traditional and telematics features. And are stored in the \models directory.
 
+# Model Performances
+When training using 120k months of driver data, the logistic regression models performed in the following way. Features are defined in [feature_selection.py](/src/telematics_insurance_model/helpers/feature_selection.py)
+```
+* Using traditional features only *
+ROC-AUC: 0.8883
+Classification report:
+              precision    recall  f1-score   support
 
-### The system should aim to: 
+           0       0.99      0.83      0.90     34819
+           1       0.13      0.76      0.22      1181
 
-* Improve premium accuracy based on real-world driving data.
-* Encourage safer driving behavior through usage-based incentives.
-* Enhance customer transparency and engagement.
-* Ensure compliance with data security and privacy regulations.
+    accuracy                           0.83     36000
+   macro avg       0.56      0.79      0.56     36000
+weighted avg       0.96      0.83      0.88     36000
+```
+```
+* Using telematics features only*
+ROC-AUC: 0.9643
+Classification report:
+              precision    recall  f1-score   support
 
+           0       1.00      0.90      0.95     34819
+           1       0.24      0.90      0.37      1181
 
-##  Scope of Work 
+    accuracy                           0.90     36000
+   macro avg       0.62      0.90      0.66     36000
+weighted avg       0.97      0.90      0.93     36000
+```
 
-* Data Collection: Implement vehicle telematics through hardware devices or smartphone apps to collect driving data such as speed, acceleration, braking, mileage, and location. In addition to telematics, seek to incorporate additional data sources that may be correlated with risk (e.g. driving history records, vehicle information, crime data, incidents of traffic accidents in the vehicle’s operating radius)
-* Data Processing: Build a backend system to securely store, clean, and process telematics data in near real-time.
-* Risk Scoring Model: Develop algorithms to assess driver behavior and determine a risk score for each policyholder. Thoughtfully assess which modeling techniques would be valid for this application (e.g. neural network vs. linear regression vs. Treebased learners)
-* Pricing Engine: Integrate the risk score into a dynamic pricing model that adjusts insurance premiums based on actual driving habits.
-* User Dashboard: Create a web/mobile interface to allow users to view their driving behavior, scores, and premium changes.
+```
+* Using traditional + telematics features *
+ROC-AUC: 0.9826
 
+Classification report:
+              precision    recall  f1-score   support
 
-## Technical Requirements 
+               0       1.00      0.94      0.97     34819
+TODO           1       0.33      0.93      0.48      1181
 
-GPS and accelerometer data integration from telematics devices or smartphones. You can use simulation data for the POC.
-Scalable cloud infrastructure for data storage and processing.
-Machine learning models for behavior-based risk scoring.
-Secure APIs for integration with existing insurance platforms.
+    accuracy                           0.94     36000
+   macro avg       0.66      0.93      0.73     36000
+weighted avg       0.98      0.94      0.95     36000
+```
 
+# Affect of Telematics data on final premium
+In summary, good drivers save on average $37 when telematics data to inform monthly premiums. Bad drivers pay on average $37 more. The analysis is detailed extensively in [how_risk_reflects_premium.ipynb](/notebooks/how_risk_reflects_premium.ipynb) 
 
-## Nice to Have
-
-* Gamification elements to promote safe driving (e.g., rewards for consistent good scores).
-* Real-time driver feedback during trips.
-* Integration with smart city traffic data or weather APIs for contextual risk assessment.
-* Personal driving management features for personal auto insurance applications.
-
-
-## Evaluation Criteria
-
-Chosen approaches to modeling based on underlying inputs and desired outcome
-Accuracy and reliability of driving behavior analysis and risk scoring.
-Performance and scalability of the data processing system.
-Cost efficiency and ROI compared to traditional models.
-
-
-# Submission Instructions
-
-# Preferred:
-
-Provide a single readme.txt that includes:
-
-A link to your public repo (GitHub or similar).
-Exact setup, run, and evaluation steps.
-Any notes on models, data, or external services.
-
-
-If you cannot use a public repo:
-
-Upload your files directly as one archive (.zip or .rar).
-Include a top-level README.md covering setup, run, and evaluation.
+![difference_in_premium_when_using_telematics](/figures/difference_in_premium_when_using_telematics.png)
 
 
-# Organize files:
+# Generating accelerometer telematics data for real time pricing 
+To generate accelerometer data for use in a real time streaming application run 
 
-/src # source code
-/models # AI models or weights (or pointers to downloads)
-/docs # research notes, design docs, diagrams
-/bin # executables or run scripts
-/data # small, anonymized sample data if allowed
+    generate-telematics
+
+This will generate 365 simluated driving trips for both good and bad driver behaviour. It also adds additional variables related to age and driving experience, and removes any features not needed for training. This data is then stored in 'data/preprocessed_data' to use as input to logistic regression algorithm for risk asessment, as well as part of the pipeline to process data in real time. A sample of the metrics shown and the measurement of the adverse events is shown below. 
+
+**Here an a speeding event is one where the driver is going over the speed limit for longer than 3 seconds.**
+
+## Good driver dashboard for trip
+![good_driver](/figures/GOOD_DRIVER_001_GOOD_TRIP_001.png)
 
 
-Add the name of the file to the textbox below in the format:   Lastname_Firstname_ProjectName.zip
+
+## Bad driver dashboard for trip
+![bad_driver](/figures/BAD_DRIVER_001_BAD_TRIP_001.png)
+
+# Evaluating Telematics data
+
+An evaluation pipeline using the trained models has been started and can be run using
+
+    evaluate-generated-telematics
+
+This will calculate a new risk factor based on the number of adverse events experienced in the given trip. These adverse events can then be tallied up throughout the month (62 trips)to give a risk asessment and final premium price.  
