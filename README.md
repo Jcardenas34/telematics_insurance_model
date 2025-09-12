@@ -30,24 +30,12 @@ evaluate-generated-telematics
 ```
 
 # Dataset
-The dataset used in this analysis was taken from mendeley data [^label], and contains a span data from three full years (November 2015 to December 2018) concerning non-life motor insurance portfolio. This dataset comprises 105,555 rows and 30 columns. Each row signifies a policy transaction, while each column represents a distinct variable. As it stands, no telematics data was included in the dataset. To simulate good and bad driver behaviour over the course of 365 trips (simulating a year of daily driving) use 'create-preprocessed-data'. 
+The dataset used in this analysis was taken from mendeley data [1], and contains a span data from three full years (November 2015 to December 2018) concerning non-life motor insurance portfolio. This dataset comprises 105,555 rows and 30 columns. Each row signifies a policy transaction, while each column represents a distinct variable. As it stands, no telematics data was included in the original dataset. Simulated telematics data + age related features are appended to a preprocessed dataset using **create-preprocessed-data** . To simulate good and bad driver behaviour over the course of 365 trips (simulating a year of daily driving) for live data processing use **create-preprocessed-data**. 
 
 ```
-[^label] Lledó, Josep; Pavía, Jose M. (2024), “Dataset of an actual motor vehicle insurance portfolio”, Mendeley Data, V2, doi: 10.17632/5cxyb5fp4f.2
+[1] Lledó, Josep; Pavía, Jose M. (2024), “Dataset of an actual motor vehicle insurance portfolio”, Mendeley Data, V2, doi: 10.17632/5cxyb5fp4f.2
 ```
 https://data.mendeley.com/datasets/5cxyb5fp4f/2
-
-
-
-# Generate telematics driver data 
-To append telematics data to the dataset for both good and bad driver behaviour, simply run
-```
-create-preprocessed-data
-```
-from the top directory.
-
-
-
 
 # Dynamic pricing model
 
@@ -65,7 +53,23 @@ and
 
 $$ 0 \leq risk\_factor \leq 1 $$
 
- a higher risk factor, determined by customer demographic information as well as driver behaviour (telematics), will be reflected in the monthly premium and updated after each risk asessment (drive). 
+ a higher/lower risk factor, determined by customer demographic information as well as driver behaviour (telematics), will be reflected in the monthly premium and updated after each risk asessment (drive). Risk factors used in premium calculation can be calculated on a *per-trip* or *monthly* basis, allowing the user to see in real time how thier driving habits affect their premium. 
+
+
+
+# Generate telematics driver data 
+To create a dataset that allows for monthly risk asessement and that contains simulated telematics data to it for both good and bad driver behaviour, simply run
+```
+create-preprocessed-data
+```
+from the top directory. 
+
+This script processes the original data by changing its original format from rows corresponding to yearly entries, to rows corresponding to monthly entries, effectively multiplying the dataset by 12x. The dataset contained number of claims per year, where 1 entry in the original dataset then corresponded to 12 entries in the post processed dataset. Because the original dataset contained the value N_claims_in_year, I randomly distributed the claims throughout the 12 months for the given entry and creted a new column that would indicate **good or bad driving** behaviour for the given month, corresponding to weather a claim was filed during the given month. 
+
+I then simulated good and bad driver behaviour by modelling adverse driver event counts like, speeding, hard brakes, hard accelerations and average speed on poisson and gaussian distributions with differing means. Bad driving event rates are sampled from poission distributions from higher means, and good from lower means. These values were then appended to the corresponding good and bad driver rows. This then allows a logistic regressor to be trained to try and predict the probability of a claim being filed in a given month given traditional risk factors and driver behaviour. Features based on driver age and driving experience were also created and appended to the dataset.
+
+
+
 
 
 
@@ -74,10 +78,15 @@ A logistic regression algorithm is used to determine weather a claim will be fil
 
     train-logistic-regressor
 
-3 models will be trained, one using only traditional demographic factors such as __, one using only telematics features such as number of speeding events, hard breaks, etc. and one using both traditional and telematics features. And are stored in the \models directory.
+3 models were trained, 
+*   one using only traditional demographic factors, 
+*   one using only telematics features such as number of speeding events, hard breaks, etc. and 
+*   one using both traditional and telematics features. 
+
+These models are stored in the /models/pre-trained directory. Features are defined in [feature_selection.py](/src/telematics_insurance_model/helpers/feature_selection.py)
 
 # Model Performances
-When training using 120k months of driver data, the logistic regression models performed in the following way. Features are defined in [feature_selection.py](/src/telematics_insurance_model/helpers/feature_selection.py)
+The models were trained using 120k months of driver data, with a 70/30 train-test split using a logistic regression algorithm, [train_logistic_regressor.py](/src/telematics_insurance_model/core/train_logistic_regressor.py). The model performances are shown below. 
 ```
 * Using traditional features only *
 ROC-AUC: 0.8883
