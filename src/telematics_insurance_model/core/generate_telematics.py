@@ -54,7 +54,7 @@ def main():
     os.makedirs('figures', exist_ok=True)
 
     # Number of good and bad drivers to simulate, choose 31 for a months worth of data 
-    num_trips = 31
+    num_trips = 365
 
     # Seconds so 10 minutes
     time = 600 
@@ -77,12 +77,12 @@ def main():
         logger.info(f"\n{driver_type} | Trip: {analysis['trip_id']}")
         logger.info(f"├─ Driver: {analysis['driver_id']}")
         logger.info(f"├─ Risk Score: {analysis['risk_score']:.1f}/100")
-        logger.info(f"├─ Trip Distance: {analysis['trip_length_miles']} miles")
         logger.info(f"├─ Duration: {analysis['trip_duration_minutes']} minutes")
         logger.info(f"├─ Max Speed: {analysis['max_speed']:.1f} mph")
+        logger.info(f"├─ Hard Braking Events: {analysis['hard_brakes']}")
+        logger.info(f"└─ Hard Acceleration Events: {analysis['hard_accel']}")
         logger.info(f"├─ Speeding Events: {analysis['speeding_events']}")
-        logger.info(f"├─ Hard Braking Events: {analysis['hard_braking_events']}")
-        logger.info(f"└─ Hard Acceleration Events: {analysis['hard_acceleration_events']}")
+        logger.info(f"├─ Trip Distance: {analysis['trip_len']} miles")
     
     # Summary statistics
     good_scores = [a['risk_score'] for a in all_analyses if 'GOOD' in a['driver_id']]

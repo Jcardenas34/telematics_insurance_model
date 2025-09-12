@@ -5,7 +5,6 @@ from typing import List, Dict
 import pandas as pd
 import numpy as np
 
-
 from telematics_insurance_model.helpers.logger import logger
 from telematics_insurance_model.utils.simulate import TelematicsDataPoint
 
@@ -20,7 +19,7 @@ class TripVisualizer:
         fig, axes = plt.subplots(2, 2, figsize=(14, 10))
         fig.suptitle(f"Trip Analysis - {analysis['driver_id']} ({analysis['trip_id']})\n" +
                      f"Risk Score: {analysis['risk_score']:.1f} | " +
-                     f"Distance: {analysis['trip_length_miles']} miles | " +
+                     f"Distance: {analysis['trip_len']} miles | " +
                      f"Duration: {analysis['trip_duration_minutes']} min", 
                      fontsize=14, fontweight='bold')
         
@@ -81,8 +80,8 @@ class TripVisualizer:
         
         # Event summary and metrics
         events = ['Speeding\nEvents', 'Hard\nBraking', 'Hard\nAcceleration']
-        counts = [analysis['speeding_events'], analysis['hard_braking_events'], 
-                 analysis['hard_acceleration_events']]
+        counts = [analysis['speeding_events'], analysis['hard_brakes'], 
+                 analysis['hard_accel']]
         colors = ['#ff4444', '#ff8800', '#aa44ff']
         
         bars = axes[1, 1].bar(events, counts, color=colors, alpha=0.8, edgecolor='black')
@@ -119,7 +118,7 @@ class TripVisualizer:
         axes[0, 0].grid(True, alpha=0.3, axis='y')
         
         # Event comparison
-        event_cols = ['speeding_events', 'hard_braking_events', 'hard_acceleration_events']
+        event_cols = ['speeding_events', 'hard_brakes', 'hard_accel']
         df_events = df[['driver_id'] + event_cols].melt(
             id_vars='driver_id', 
             value_vars=event_cols,

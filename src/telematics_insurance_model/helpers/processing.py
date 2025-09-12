@@ -33,7 +33,8 @@ class TripAnalyzer:
         speeding_events = 0
         speed_counter = 0
         track_speed = False
-        # only count something as a speeding event if the speed threshold is crossed
+
+        # Only count something as a speeding event if the speed threshold is crossed
         for k in range(1,len(speeds)):
             if speeds[k-1] < self.speeding_threshold and speeds[k] > self.speeding_threshold:
                 track_speed = True
@@ -52,15 +53,15 @@ class TripAnalyzer:
         # Speeding events
         # speeding_events = sum(1 for speed in speeds if speed > self.speeding_threshold)
         
-        # Hard braking events
+        # Tally the number of Hard braking events
         hard_braking_events = sum(1 for accel in accelerations 
                                 if accel <= self.hard_braking_threshold)
         
-        # Hard acceleration events
+        # Tally the number of Hard acceleration events
         hard_acceleration_events = sum(1 for accel in accelerations 
                                      if accel >= self.hard_acceleration_threshold)
         
-        # Additional metrics
+        # Tally the number of Additional metrics
         max_deceleration = min(accelerations) if accelerations else 0
         max_acceleration = max(accelerations) if accelerations else 0
         
@@ -68,14 +69,14 @@ class TripAnalyzer:
         analysis = {
             'trip_id': trip_data[0].trip_id,
             'driver_id': trip_data[0].driver_id,
-            'trip_length_miles': round(estimated_trip_miles, 2),
             'trip_duration_minutes': round(len(trip_data) * 1 / (3*60), 1),
             'data_points': len(trip_data),
             'max_speed': round(max(speeds), 1),
             'avg_speed': round(np.mean(speeds), 1),
+            'hard_accel': hard_acceleration_events,
+            'hard_brakes': hard_braking_events,
+            'trip_len': round(estimated_trip_miles, 2),
             'speeding_events': speeding_events,
-            'hard_braking_events': hard_braking_events,
-            'hard_acceleration_events': hard_acceleration_events,
             'max_acceleration': round(max_acceleration, 3),
             'max_deceleration': round(max_deceleration, 3),
             'risk_score': self.calculate_risk_score(
