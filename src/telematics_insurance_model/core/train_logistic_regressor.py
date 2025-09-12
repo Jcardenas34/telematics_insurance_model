@@ -108,7 +108,7 @@ def main():
 
         # Example: premium calculation
         base_premium = 300
-        alpha = 1000
+        alpha = 200 # At maximum we want to increace the premium by 200 dollars for VERY risky drivers
         preprocessed_df["premium"] = base_premium + alpha * preprocessed_df["risk_factor"]
 
         # Save the dataset with risk scores and premiums
