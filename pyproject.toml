@@ -28,3 +28,4 @@ where = ["src"]
 
 [project.scripts]
 generate-telematics = "telematics_insurance_model.core.generate_telematics:main"
+create-preprocessed-data = "telematics_insurance_model.core.preprocess_data:main"
