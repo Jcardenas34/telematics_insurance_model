@@ -1,239 +1,87 @@
 
+# Introduction
+Hello, my name is Juan Cardenas, and I applied for the position of AI Associate because I beleive it is a great first step
+in the development of my career as an AI engineer. 
 
+In my submission, I was able to clean and process and existing dataset of auto insurance claim data to have it include
+additional features, as well as telematics data so I could train a logistic regression algorithm that would price auto policies more fairly by taking into account 
+driver behaviour. I also simulated accelerometer telematics data to simulate a real 10 minute trip for both good and bad drivers, this data is able to be evaluated
+by my trained algorithm and can eventually be used to feed to an algorithm in real time.
 
-# Strategize
-	Ok, so I realize that Im not going to be able to do this right away.. I need to think about a few things...
+# General Goal
+My goal was to create a logistic regression algorithm to predict the probability of a claim being filed in a given month from policy holder data.
+This includes both traditional demographic data, as well as telematics data that I simulated. The output of the algorithm would be a factor ranging from 0 to 1
+that would indicate a "risk_factor" which would then be used in a simple dynamic pricing model. here 
 
-	So.. create a pricing model for the 
+$$ monthly\_premium = base\_premium + \alpha*risk\_factor $$
 
-	So for the company to make money, on insuance, they need to collect more money than they payout in insuance premiums
+Where monthly premium equals a base premium plus a maximum penalty factor alpha multiplied by the risk factor.
+So when risk factor decreaces due to good driver habits, this can be reflected in the monthly premium and vice versa.
+Making for a more enjoyable customer experience.
 
-	And so.. 
+# Approach
+I began by taking the existing claim data with 100k entries, which had 1 entry per year of coverage and spanned over 3 years.
+Where the number of claims in that year was present.
+Since my goal was to create a logistic regression algorithm that would calculate risk on a monthly basis, I decided to
+break a single row into 12 rows, and distribute the number of claims randomly between the months, counting these as instances where bad driving occoured.
 
-	if we have data, on how much money a given person filed in claims per year and with different attributes.
-	We can see which are the most at risk drivers, as well as decide on a amount of money that is needed in order 
-	to still make a profit, this can determine our base payment.
+From here, I simulated telematics data by drawing adverse driver events such as speeding events, hard, breaks and hard accelerations, by
+modelling them using a poisson distribution with higher means for bad driver behaviour. This emulated and correlated driver behaiour with months that had claims.
 
-	from there, if we can predict how much money a person will cost us given input variables, we can set the insurance cost
-	to eb x% above this to recoop costs. We can then take into account driver behaviour into this calculation, and price appropriately.
+# Model selection and evaluation
+My immedeate approach given the time constraints was to select the simplest model and use it as a baseline using both traditional and telematics data.
+From there i would move on to more complex models if necessary.
 
-	The thing is.. we want to asess the risk score in real time?? 
+I began with a logistic regressor in scikit learn and trained on 120k months of driver records.
+Where months without a claim represented a vast majority of the events in the set. 
+I trained models with traditional data only, telematics data only and with both traditional and telematics data.
 
-	And so, we can determine a min price that is needed to charge, based on the average cost and number of customers
+The performance of the algorithms was rather good when using AUC metrics, ranging from .88 using only trraditional features
+and .98 when including telematics data. But with a precision for the positive class was .33 at maximum, indicating a high false positive rate.
+and a potential skew towards higher prices for good drivers.
 
-	They said that I need to have a risk score associated with heach policy holder. 
+Given this good performance I decided not to persue neural networks for the time being.
 
 
-	I guess.. The way that I can do this is by looking at how much a given customer was charged in terms of premiums, 
-	and see where they lie on the z distribution. 
+I now wanted to quantify the effect that using different models had on the average premim for good drivers and I found that good drivers 
+saved on average $37 per month when using the model that included telematics data. this can be seen more in depth in the 
+'how risk reflects premium' jupyter notebook.
 
 
-	so all I know is that higher accerlerometer data will have to lead to a higher risk score.
+# Real time data processing
+From here, I decided to simulate accelerometer data for real time processing.
 
+I was able to simulate a 365 10 minute drives at neighborhood speeds with good and bad driver behaviour by simulating accelerometer and velocity readings
+and using those values to count the number of adverse events.
 
-	Ideally, I would have data for driver demographics as well as telemetrics data, but here I dont have that..
-	
-	I have found a dataset that DOES have the driver data, but is missing the telemetrics data..
-	So what do I do with this.. So.. right now, In order to create a model, I have to create either a supervised, or 
-	unsupervised model. 
-	
-# Deciding on how to measure risk
+These adverse events are then be tallied and stored in a csv file for use as input to my logistic regression algorithm to calculate risk. that pipeline can be run by running 
 
-	The thing is.. what do I want to predict here.. risk?? and see how that factors into the end product?
-	OR do I want to try and predict insurance premium, or what?
+	generate-telematics
 
-	I dont think I want to directly calculate the insurance cost to the user. although thats what they will pay attention
-	to in the end.. 
+followed by
 
-	But.. I guess if I can use regression to calculate a risk score, then I can use that to calculate the pricing.
+	evaluate-generated-telematics
 
-	So I will see how the addition of data will affect the risk, and how the risk will affect rpicing in the end.
 
-	so I have seen this formula..
+Where images of the accelerometer data and averse events per trip are shown in the figures file.
 
-	premium = base_cost + (a*risk_factor)
+# Summary
 
-	if risk factor goes from 0 to 1 as in logistic regression.. then we will fluctuate in cost around.
+In summary I developed a code base to show a proof of concept for a logistic regression algorithm that takes into account driver behaviour and shows that it can have a material effect on pricing. Rewarding drivers with lower premiums when they drive more safely. I was also able to simulate accelerometer data for telematics that will be used in a live input system, as well as shows trip data for a given driver. See figures folder 
 
-	base_cost+- a at maximum..
 
-	So.. I need to create a model that will predict risk score, but not only that It will predict it in real time.
 
-	I guess that is possible if it takes in the telemetry data while the other data are fixed, or are updated
-	on a slower basis, like total_claims_this_year, average_claims_per_year would also be useful..
 
-	So.. I am back with this logistic regression problem..
 
-	So.. based off of this..
-	https://pmc.ncbi.nlm.nih.gov/articles/PMC11386000/#_ad93_
 
-	I can make a model that will predict weather someone will file a claim. and if they do, their risk score will go up.
 
-	So.. this is actually, maybe a good thing since, that is what would drive the cost of insuring a person.
 
-	I can model this as, probability that someone will file a claim as the risk score, this lends itsself to logistic 
-	regression. And once they do file a claim , I guess thier base can go up, and the driving behaviour will influence 
-	how much thier premium goes up or down, so they sill have control over thier premium, but 
 
-	Ok, so.. how can I determine the probability that they will file a claim? And produce a risk score from this?
 
-	I guess I dont want perfect.. I just want a model that incorporates everything..
 
-	I guess, this should also be an 'at fault claim' since otherwise the claims will raise theier insurance for no reason..
 
-# Exploration of dataset
 
-	So.. does the dataset I have allow me to calculate the probability of a claim being filed? 
 
-	Age, location, vehicle type, past claims?
-	The dataset has: Age of driver, number of years driving, cost of claims (indicates severity of the claim),
-	n_claims_year, n_claims_history, R_claims_history, type_risk (roughly corresponds to vehicle type), Area (traffic _condistions)
-	second_driver (more people driving means more risk), vehicle_characteristics (maybe type of vehicle increaces probability of collisions)
-
-	So.. I want to see if these variabels are highly correlated with the number of claims, or collisions..
-	but how do I do that..
-
-	And from here, I want to be able to have just 1 value per account? Now I have data for a given year.
-	Can I use the data for each year as a training datapoint? I guess years are independent of each other.
-
-	I need to know, how these variables correlate to.. N_claims_year. this would I guess.. give an indication
-	of weather a customer filed a claim. But.. some have up to 9 claims in a year.. So.. do I just convert this to binary?
-	for no claim to any number of claims? I guess claim history is where this would come into play.. hisgher claims
-	in the past, could predict higher claims in the present.
-
-	Once I calculate a risk score for each person.. by creating a logistic regression model. I can add in driver 
-	telemetrics data.. Since the current risk score only took into account vehicle type and other characteristics.
-	I can assume that driving behaviour is gaussian amongst age ranges.. And leave the claim logistic regression
-	model unchanged? This will then change the model to take into account driving behaviour.. even though its 
-	not the actual driver behaviour. we can then invect artifical driving data to see how this would affect premiums in the end.
-
-	
-# Including telemetrics data
-
-    So, once I have the tradiational datasets.. how would I incorporate the telemetrics data??
-
-    The requirements are for the pricing to change in real time according to the driving behaviour
-
-    lets just say that the pricing model is based on 
-
-    premium = base_rate + (a*risk) + factors
-
-    What kinds of telemetrics data can I incorporate??
-
-*    speed
-*    braking patterns
-*    mileage
-*    time of travel
-*    and geolocation.
-
-    How can I normalize these so that they can become training variables?
-
-    The usual is to create gaussians from them, can I do that?
-    I also need this to be a real time evaluation system, not something that I can calculate
-    once 
-
-    So.. this will indicate PRESENT risk, like at this very second risk.. but not.. risk that comes 
-    from the driving history.. 
-    well.. first let me find a telemetrics data, and see if I can just attatch this behaviour to all othe other drivers..
-
-    But...I need to be able to gather information from the trips and add them to a long term stable dataset.
-    Where the behaviour is recorded.. like perpleity suggested, monitor the driving behaviour for number of hard 
-    breaks per day? number of speeding events per day?
-
-    The thing is.. that since those tradiational factors are being measured on a yearly basis.. how will
-    I mix them with monthly premiums? 
-
-    Yeah I guess I would have to tally up the number of risky events per month, and then pass them to the model to evaluate risk at the end of the month and 
-
-    But.. we can create display of how real time behaviour affects price. But.. I guess the behaviour resets at the end of the month? and the driver has the opportunity to lower thier cost by driving well.
-
-    So.. with good behaviour, the price will stay at a baseline risk associated with the vehicle they are driving and age.
-
-    I need to be smart about how I assign driving behaviour to the people.. since assigning a good driving 
-
-    I mean I could also make this a factor in the model, where the good driver score could range from -1 to 1 
-    and increace or decreace the cost by a certain maximum amount..
-
-    either that OR I could bake this striaght into the initial model that calculates risk..
-    if thats the case then I cant use a risk score from 0 to 1 can I 
-
-    yeah I can either have the driving behaviour be correlated to the tradiational characteristics, or
-    be indiependent and add it as a factor.. 
-
-    I guess the model can start off at the lowest rate, and then increace as the model detects bad driving behaviour.
-    But once the event is detected it permanantly changes the monthly price.
-
-
-    The model in this case would be very simple.. you get a discount for no adverse events, and a linearly 
-    increacing price increace for each adverse event. where each event has a negative price associated with it
-
-
-    I guess through that I would have to necessarily correlate bad driving risk with the probability of getting a claim..
-
-    So.. I guess I can sort poilcy holders by the number of claims, and give them a bad driving habits.
-
-
-    The dirving habits could be incremented in real time. and pushed to the algorithm..
-
-    As long as I prodce something..
-
-
-    I actually could wrap up the adverse events in the initial model if I create a dataset 
-    that includes those as synthetic data. so that theyre automatically correlated with the number of 
-    claims.
-
-    The thing is.. the dataset that I have is for the number of claims in a year, not a month..
-    So.. I need to find a dataset that has these on the same basis...
-
-    I guess since this is a synthetic dataset.. I can adjust the data so that..
-
-    the number of claims gets incremented.. that would expand the dataset forsure..
-
-
-    So. N_claims per year = 3 would be broken into 3 instances.  with a boolean value.
-
-    I guess to actually break it into claims per year, I would have to break the entry into 12 months with 
-    3 of the 12 having a claim, and the other 9 not having a claim. and associate the months with claims to have 
-    bad driving behaviour. This would eliminate the bias for certain demographic of people.
-
-    I need the data to be euqlly represented as well.. across demographics.. or do I? I guess I need to frequency of measurement needs to be normalized. 
-
-    But.. ok so I can do this.. 
-
-    split each entry into a total of 12 entries, and divide up the claims into months randomly. 
-    fuck though, one person got 25 claims in one year.. so how would I split that, thats like, 2 claims a month..
-    I guess in that case I would just say there was a claim every month..
-
-    And just associate bad behaviour for each month.
-
-    I also have to associate bad driving behaviour even if no claims were made. But I guess..
-
-
-    Ok so take each row in the dataset that has tradiational data.
-    split the row into 12 and distribute the number of claims into the entries to indicate that a claim was made.
-    This will determine risk factor. if above 12 then assign claim to every month.
-
-    Then attatch driving behaviour variables to the list of variables like.
-
-    Number of speeding events per month, number of hard breaks per month, and anything else I can determine 
-    from the datasets that I have..
-
-    So which telemetrics data am I going to use?
-
-    I also have to model the driving behaviour off of the input data that I have..
-    Like what is the ma and min of the adverse events,
-
-*    the data will then be put into a logistic regression algorithm that will calculate risk..
-    Either a neural net or a linear model, XGBoost?, How would decision trees work here? I guess it could 
-    work the same since we want to output 0 to 1
-    And then give a price indication afterwards when put through the formula.
-
-    The algorithm can do a live risk asessment by streaming in the data and keeping track of the number of adverse events. After every drive, a model inference is called, and we can see how the data being monitoed affected
-    the cost of the insurance.. No adverse events, no price increace.
-
-    Integrate weather API into algorithm for risk asessment.
-
-    
 
 
 
