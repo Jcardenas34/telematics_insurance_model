@@ -56,10 +56,15 @@ I have chosen a pricing scheme that is a function of a calculated "risk_factor",
 
 
 $$premium = base\_rate + \alpha*risk\_factor $$
+
 Where 
+
 $$ BaseRate = \$300, \alpha = \$200 $$
+
 and
+
 $$ 0 \leq risk\_factor \leq 1 $$
+
  a higher risk factor, determined by customer demographic information as well as driver behaviour (telematics), will be reflected in the monthly premium and updated after each risk asessment (drive). 
 
 
