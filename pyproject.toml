@@ -29,3 +29,4 @@ where = ["src"]
 [project.scripts]
 generate-telematics = "telematics_insurance_model.core.generate_telematics:main"
 create-preprocessed-data = "telematics_insurance_model.core.preprocess_data:main"
+train-logistic-regressor = "telematics_insurance_model.core.train_logistic_regressor:main"
