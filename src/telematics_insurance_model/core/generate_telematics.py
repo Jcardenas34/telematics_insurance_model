@@ -13,7 +13,9 @@ from telematics_insurance_model.helpers.processing import TripAnalyzer
 from telematics_insurance_model.utils.visualization import TripVisualizer
 from telematics_insurance_model.utils.simulate import TelematicsSimulator, generate_trips
 
-
+# Supress warning messages for hue in seaborn visualizations
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def main():
@@ -39,7 +41,8 @@ def main():
 
 
     logger.info("Starting Simple Telematics Data Simulation System")
-    
+    print("\nStarting Simple Telematics Data Simulation System")
+
     # Initialize components
     simulator = TelematicsSimulator()
     analyzer = TripAnalyzer()
@@ -59,6 +62,9 @@ def main():
     # Seconds so 10 minutes
     time = 600 
 
+    logger.info(f"Simulating {num_trips} trips of {time/60:.1f} minutes each...")
+    print(f"Simulating {num_trips} trips of {time/60:.1f} minutes each...\n")
+
     generate_trips(num_trips, time, simulator, analyzer, all_analyses, all_trip_data)
     
 
@@ -66,6 +72,9 @@ def main():
     # Export all analyses
     analyses_df = pd.DataFrame(all_analyses)
     analyses_df.to_csv('data/trip_records/trip_analyses.csv', index=False)
+
+    logger.info("Trip analyses saved to 'data/trip_records/trip_analyses.csv'")
+    print("Trip analyses saved to 'data/trip_records/trip_analyses.csv'\n")
     
     # Print summary analyses
     logger.info("\n" + "="*70)
@@ -97,6 +106,7 @@ def main():
     
     # Create visualizations
     logger.info("Creating visualizations...")
+    print("Creating visualizations...")
     
     # Show individual trip details for first good and bad driver
     good_trip_data, good_analysis = next(td for td in all_trip_data if 'GOOD' in td[1]['driver_id'])
@@ -108,6 +118,15 @@ def main():
     
     logger.info("Simulation completed successfully!")
     logger.info("Data files saved to 'data/trip_records/' directory")
+    logger.info("Figures saved to 'figures/' directory")
+
+    print("Simulation completed successfully!")
+    print("Data files saved to 'data/trip_records/' directory")
+    print("Figures saved to 'figures/' directory\n\n")
+
+    logger.info(f"Simulated Telematics data for all {num_trips} trips stored in 'data/trip_records/trip_analyses.csv'")
+    print(f"Simulated Telematics data for all {num_trips} trips stored in 'data/trip_records/trip_analyses.csv'")
+
 
 if __name__ == "__main__":
     main()

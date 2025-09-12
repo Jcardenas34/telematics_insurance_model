@@ -12,7 +12,7 @@ def main():
     data_path = "data/trip_records/trip_analyses.csv"
 
     evaluation_df = pd.read_csv(data_path)
-    print(evaluation_df.columns)
+    # print(evaluation_df.columns)
 
 
 
@@ -49,15 +49,15 @@ def main():
 
     filename = f'log_reg_{model_name}.pkl'
     pipeline = joblib.load("models/"+filename)
+
+    logger.info("Pipeline loaded successfully.")
     print("Pipeline loaded successfully.")
 
-
-
+    logger.info(f"Loaded pipeline from models/{filename}")
     print(f"Loaded pipeline from models/{filename}")
 
 
     # Evaluate performance on test set
-    logger.info("Logistic Regression model trained and saved.")
     logger.info("Evaluating performance on test set...")
 
     # ----------------------------
@@ -72,6 +72,8 @@ def main():
 
     # Save the dataset with risk scores and premiums
     evaluation_df.to_csv("data/trip_records/generated_dataset_with_risk_scores.csv")
+
+
     logger.info("Dataset with risk scores and premiums saved to data/trip_records/generated_dataset_with_risk_scores.csv")
     print("Dataset with risk scores and premiums saved to data/trip_records/generated_dataset_with_risk_scores.csv")
     logger.info("Model evaluation completed.")
