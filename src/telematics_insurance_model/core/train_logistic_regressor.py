@@ -1,3 +1,4 @@
+import os
 import joblib
 import numpy as np
 import pandas as pd
@@ -70,7 +71,8 @@ def main():
     y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
 
 
-
+    # Ensure models directory exists
+    os.makedirs('models', exist_ok=True)
 
     # Save the model
     filename = f'log_reg_{model_name}.pkl'
