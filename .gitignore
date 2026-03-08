@@ -2,7 +2,7 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
+.DSStore
 
 # Will exclude datasets
 data/trip_records/GOOD*
