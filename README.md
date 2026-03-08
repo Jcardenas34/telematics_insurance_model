@@ -122,7 +122,7 @@ Classification report:
               precision    recall  f1-score   support
 
                0       1.00      0.94      0.97     34819
-TODO           1       0.33      0.93      0.48      1181
+               1       0.33      0.93      0.48      1181
 
     accuracy                           0.94     36000
    macro avg       0.66      0.93      0.73     36000
